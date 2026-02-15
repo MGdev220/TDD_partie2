@@ -1,16 +1,15 @@
 import { test, expect } from "@playwright/test";
 import * as path from "path";
+import { FIXTURES_DIR, loadDirectory, selectFile } from "./helpers";
 
 /**
  * Étape 2 — ATDD : Exploration de répertoire et sélection de fichiers.
  */
 
-const FIXTURES_DIR = path.resolve(__dirname, "..", "test-fixtures");
-
 test.describe("Étape 2 - Exploration et sélection", () => {
   // Charger le répertoire de fixtures avant chaque test
   test.beforeEach(async ({ request }) => {
-    await request.get(`/api/files?path=${FIXTURES_DIR}`);
+    await loadDirectory(request, FIXTURES_DIR);
   });
 
   // ---------- Sélection individuelle ----------
@@ -47,7 +46,7 @@ test.describe("Étape 2 - Exploration et sélection", () => {
   test("POST /api/files/deselect désélectionne un fichier", async ({
     request,
   }) => {
-    await request.post("/api/files/select", { data: { name: "fichier1.txt" } });
+    await selectFile(request, "fichier1.txt");
 
     const res = await request.post("/api/files/deselect", {
       data: { name: "fichier1.txt" },
@@ -85,7 +84,7 @@ test.describe("Étape 2 - Exploration et sélection", () => {
   // ---------- État courant ----------
 
   test("GET /api/files/current reflète la sélection", async ({ request }) => {
-    await request.post("/api/files/select", { data: { name: "fichier2.txt" } });
+    await selectFile(request, "fichier2.txt");
 
     const res = await request.get("/api/files/current");
     expect(res.status()).toBe(200);
@@ -101,7 +100,7 @@ test.describe("Étape 2 - Exploration et sélection", () => {
   test("Naviguer dans un sous-dossier réinitialise la sélection", async ({
     request,
   }) => {
-    await request.post("/api/files/select", { data: { name: "fichier1.txt" } });
+    await selectFile(request, "fichier1.txt");
 
     const subDir = path.join(FIXTURES_DIR, "sous-dossier");
     const res = await request.get(`/api/files?path=${subDir}`);
