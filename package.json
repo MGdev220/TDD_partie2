@@ -1,16 +1,25 @@
 {
   "name": "tdd-partie2",
   "version": "1.0.0",
-  "description": "Atelier 3 - Classe de sélection et manipulation de fichiers",
+  "description": "Atelier 3 & 4 - FileManager avec API Express et tests ATDD Playwright",
   "main": "dist/FileManager.js",
   "scripts": {
     "build": "tsc",
-    "test": "jest --verbose"
+    "test": "jest --verbose",
+    "test:e2e": "npx playwright test",
+    "start": "npx ts-node src/app.ts"
   },
   "devDependencies": {
-    "typescript": "^5.4.0",
+    "@playwright/test": "^1.58.2",
+    "@types/express": "^5.0.6",
+    "@types/jest": "^29.5.12",
+    "@types/node": "^25.2.2",
     "jest": "^29.7.0",
     "ts-jest": "^29.1.2",
-    "@types/jest": "^29.5.12"
+    "ts-node": "^10.9.2",
+    "typescript": "^5.4.0"
+  },
+  "dependencies": {
+    "express": "^5.2.1"
   }
 }
