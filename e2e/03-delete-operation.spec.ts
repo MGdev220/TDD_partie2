@@ -1,6 +1,7 @@
 import { test, expect } from "@playwright/test";
 import * as fs from "fs";
 import * as path from "path";
+import { FIXTURES_DIR, loadDirectory, selectFile } from "./helpers";
 
 /**
  * Étape 3 — ATDD : Opération complète (suppression).
@@ -9,7 +10,6 @@ import * as path from "path";
  * dédié de test-fixtures pour ne pas casser les fixtures permanentes.
  */
 
-const FIXTURES_DIR = path.resolve(__dirname, "..", "test-fixtures");
 const TEMP_DIR = path.join(FIXTURES_DIR, "temp-delete-test");
 
 /** Crée le dossier temporaire avec des fichiers de test. */
@@ -33,7 +33,7 @@ function cleanupTempDir() {
 test.describe("Étape 3 - Opération de suppression", () => {
   test.beforeEach(async ({ request }) => {
     setupTempDir();
-    await request.get(`/api/files?path=${TEMP_DIR}`);
+    await loadDirectory(request, TEMP_DIR);
   });
 
   test.afterEach(() => {
@@ -44,8 +44,8 @@ test.describe("Étape 3 - Opération de suppression", () => {
 
   test("DELETE sélection supprime les fichiers choisis", async ({ request }) => {
     // Sélectionner a.txt et b.txt
-    await request.post("/api/files/select", { data: { name: "a.txt" } });
-    await request.post("/api/files/select", { data: { name: "b.txt" } });
+    await selectFile(request, "a.txt");
+    await selectFile(request, "b.txt");
 
     // Supprimer
     const res = await request.post("/api/files/delete");
@@ -99,8 +99,8 @@ test.describe("Étape 3 - Opération de suppression", () => {
     const bPath = path.join(TEMP_DIR, "b.txt");
     fs.chmodSync(bPath, 0o444);
 
-    await request.post("/api/files/select", { data: { name: "a.txt" } });
-    await request.post("/api/files/select", { data: { name: "c.txt" } });
+    await selectFile(request, "a.txt");
+    await selectFile(request, "c.txt");
 
     const res = await request.post("/api/files/delete");
     expect(res.status()).toBe(200);
@@ -128,7 +128,7 @@ test.describe("Étape 3 - Opération de suppression", () => {
     expect(body.entries).toHaveLength(3);
 
     // 2. Sélectionner un fichier
-    await request.post("/api/files/select", { data: { name: "b.txt" } });
+    await selectFile(request, "b.txt");
 
     // 3. Supprimer
     res = await request.post("/api/files/delete");

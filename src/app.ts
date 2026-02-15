@@ -16,6 +16,15 @@ const fm = new FileManager(
   new RealRandomProvider()
 );
 
+/** Helper : construit la réponse JSON d'état courant. */
+function currentState() {
+  return {
+    currentDirectory: fm.getCurrentDirectory(),
+    entries: fm.getEntries(),
+    selected: fm.getSelectedEntries(),
+  };
+}
+
 // ==================== Routes API ====================
 
 /**
@@ -29,11 +38,7 @@ app.get("/api/files", (req: Request, res: Response) => {
   }
   try {
     const entries = fm.listEntries(dirPath);
-    return res.json({
-      currentDirectory: fm.getCurrentDirectory(),
-      entries,
-      selected: fm.getSelectedEntries(),
-    });
+    return res.json(currentState());
   } catch (e: any) {
     return res.status(404).json({ error: e.message });
   }
@@ -44,11 +49,7 @@ app.get("/api/files", (req: Request, res: Response) => {
  * Retourne l'état courant (entrées + sélection).
  */
 app.get("/api/files/current", (_req: Request, res: Response) => {
-  return res.json({
-    currentDirectory: fm.getCurrentDirectory(),
-    entries: fm.getEntries(),
-    selected: fm.getSelectedEntries(),
-  });
+  return res.json(currentState());
 });
 
 /**
@@ -100,8 +101,7 @@ app.post("/api/files/copy", (req: Request, res: Response) => {
     return res.json({
       destinationPath: result.destinationPath,
       errors: result.errors,
-      entries: fm.getEntries(),
-      selected: fm.getSelectedEntries(),
+      ...currentState(),
     });
   } catch (e: any) {
     return res.status(400).json({ error: e.message });
@@ -117,8 +117,7 @@ app.post("/api/files/move", (req: Request, res: Response) => {
     return res.json({
       destinationPath: result.destinationPath,
       errors: result.errors,
-      entries: fm.getEntries(),
-      selected: fm.getSelectedEntries(),
+      ...currentState(),
     });
   } catch (e: any) {
     return res.status(400).json({ error: e.message });
@@ -131,8 +130,7 @@ app.post("/api/files/delete", (_req: Request, res: Response) => {
     const result = fm.deleteSelection();
     return res.json({
       errors: result.errors,
-      entries: fm.getEntries(),
-      selected: fm.getSelectedEntries(),
+      ...currentState(),
     });
   } catch (e: any) {
     return res.status(400).json({ error: e.message });
