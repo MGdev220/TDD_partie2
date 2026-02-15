@@ -1,5 +1,5 @@
 import { test, expect } from "@playwright/test";
-import * as path from "path";
+import { FIXTURES_DIR } from "./helpers";
 
 /**
  * Étape 1 — Premier test ATDD : lister les fichiers d'un répertoire prédéfini.
@@ -9,8 +9,6 @@ import * as path from "path";
  *   ├── fichier2.txt
  *   └── sous-dossier/
  */
-
-const FIXTURES_DIR = path.resolve(__dirname, "..", "test-fixtures");
 
 test.describe("Étape 1 - Liste des fichiers", () => {
   test("GET /api/files retourne les entrées du répertoire test-fixtures", async ({
